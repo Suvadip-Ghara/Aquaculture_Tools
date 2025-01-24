@@ -1,0 +1,331 @@
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Box,
+  Paper,
+  useTheme,
+  useMediaQuery,
+  Chip,
+} from '@mui/material';
+import {
+  WaterDrop,
+  Restaurant,
+  ShowChart,
+  Calculate,
+  Science,
+  Inventory,
+  Assessment,
+  Event,
+  TrendingUp,
+  MonitorHeart,
+  Air,
+  Recycling,
+  WaterOutlined,
+  Layers,
+  BoltOutlined,
+  WbSunny,
+  Construction,
+  Timeline,
+  Pets,
+  LocalDining,
+} from '@mui/icons-material';
+
+const tools = [
+  {
+    name: 'Water Quality Monitor',
+    description: 'Track and analyze water parameters for optimal fish health',
+    icon: <WaterDrop />,
+    path: '/water-quality',
+    color: '#2196f3',
+  },
+  {
+    name: 'Feed Management',
+    description: 'Optimize feeding schedules and track feed efficiency',
+    icon: <Restaurant />,
+    path: '/feed-management',
+    color: '#4caf50',
+  },
+  {
+    name: 'Growth Rate Tracker',
+    description: 'Monitor fish growth and predict harvest times',
+    icon: <ShowChart />,
+    path: '/growth-tracker',
+    color: '#ff9800',
+  },
+  {
+    name: 'FCR Optimizer',
+    description: 'Calculate and optimize feed conversion ratios',
+    icon: <Calculate />,
+    path: '/fcr-calculator',
+    color: '#f44336',
+  },
+  {
+    name: 'Disease Prevention',
+    description: 'Early warning system for disease prevention',
+    icon: <Science />,
+    path: '/disease-prevention',
+    color: '#9c27b0',
+  },
+  {
+    name: 'Waste to Fertilizer',
+    description: 'Convert fish waste into organic fertilizer',
+    icon: <Recycling />,
+    path: '/waste-fertilizer',
+    color: '#795548',
+  },
+  {
+    name: 'Fish Stress Monitor',
+    description: 'Identify and analyze fish stress factors',
+    icon: <MonitorHeart />,
+    path: '/fish-stress',
+    color: '#009688',
+  },
+  {
+    name: 'Pond Evaporation',
+    description: 'Calculate water loss and manage replenishment',
+    icon: <WaterOutlined />,
+    path: '/pond-evaporation',
+    color: '#0288d1',
+  },
+  {
+    name: 'Pond Sediment',
+    description: 'Monitor and manage pond sediment buildup',
+    icon: <Layers />,
+    path: '/pond-sediment',
+    color: '#8d6e63',
+  },
+  {
+    name: 'Energy Efficiency',
+    description: 'Analyze and optimize energy consumption',
+    icon: <BoltOutlined />,
+    path: '/energy-efficiency',
+    color: '#ffc107',
+  },
+  {
+    name: 'Weather Impact',
+    description: 'Analyze weather effects on pond conditions',
+    icon: <WbSunny />,
+    path: '/weather-impact',
+    color: '#ff5722',
+  },
+  {
+    name: 'Growth Benchmark',
+    description: 'Compare growth rates with industry standards',
+    icon: <TrendingUp />,
+    path: '/growth-benchmark',
+    color: '#9e9d24',
+  },
+  {
+    name: 'Growth Predictor',
+    description: 'Predict fish growth and plan harvests',
+    icon: <Timeline />,
+    path: '/growth-predictor',
+    color: '#673ab7',
+  },
+  {
+    name: 'Species Suitability',
+    description: 'Find the best fish species for your conditions',
+    icon: <Pets />,
+    path: '/species-suitability',
+    color: '#2962ff',
+  },
+  {
+    name: 'Feeding Calculator',
+    description: 'Calculate species-specific feeding amounts',
+    icon: <LocalDining />,
+    path: '/feeding-calculator',
+    color: '#d32f2f',
+  },
+  {
+    name: 'Pond Lining',
+    description: 'Calculate costs for pond lining materials',
+    icon: <Construction />,
+    path: '/pond-lining',
+    color: '#757575',
+  },
+  {
+    name: 'Reports & Analytics',
+    description: 'Generate comprehensive reports and insights',
+    icon: <Assessment />,
+    path: '/reports',
+    color: '#3f51b5',
+  },
+  {
+    name: 'Production Calendar',
+    description: 'Plan and schedule aquaculture operations',
+    icon: <Event />,
+    path: '/calendar',
+    color: '#e91e63',
+  },
+  {
+    name: 'Aeration Calculator',
+    description: 'Design and optimize pond aeration systems',
+    icon: <Air />,
+    path: '/aeration-calculator',
+    color: '#00bcd4',
+  },
+];
+
+export default function Home() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  return (
+    <Container maxWidth="xl">
+      {/* Hero Section */}
+      <Box
+        component="header"
+        sx={{
+          py: { xs: 4, md: 8 },
+          textAlign: 'center',
+          mb: 6,
+        }}
+      >
+        <Typography
+          variant="h2"
+          component="h1"
+          gutterBottom
+          sx={{
+            fontWeight: 700,
+            fontSize: { xs: '2rem', md: '3rem' },
+            background: 'linear-gradient(45deg, #1976d2 30%, #2e7d32 90%)',
+            backgroundClip: 'text',
+            textFillColor: 'transparent',
+            mb: 2,
+          }}
+        >
+          Aquaculture Management Tools
+        </Typography>
+        <Typography
+          variant="h5"
+          color="text.secondary"
+          sx={{ mb: 4, maxWidth: '800px', mx: 'auto' }}
+        >
+          Comprehensive digital solutions for modern aquaculture operations
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Chip label="Water Quality" color="primary" />
+          <Chip label="Feed Management" color="success" />
+          <Chip label="Disease Prevention" color="error" />
+          <Chip label="Growth Tracking" color="warning" />
+        </Box>
+      </Box>
+
+      {/* Tools Grid */}
+      <Grid container spacing={3}>
+        {tools.map((tool) => (
+          <Grid item xs={12} sm={6} md={4} key={tool.path}>
+            <Card
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                },
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    mb: 2,
+                    color: tool.color,
+                  }}
+                >
+                  {React.cloneElement(tool.icon, { sx: { fontSize: 40 } })}
+                  <Typography variant="h5" component="h2" sx={{ ml: 2 }}>
+                    {tool.name}
+                  </Typography>
+                </Box>
+                <Typography variant="body1" color="text.secondary">
+                  {tool.description}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button
+                  component={RouterLink}
+                  to={tool.path}
+                  size="large"
+                  sx={{ ml: 1, mb: 1 }}
+                >
+                  Open Tool
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Features Section */}
+      <Paper sx={{ mt: 6, p: 4, bgcolor: 'background.default' }}>
+        <Typography variant="h4" component="h2" gutterBottom align="center">
+          Why Choose Our Tools?
+        </Typography>
+        <Grid container spacing={4} sx={{ mt: 2 }}>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" gutterBottom>
+                Expert-Backed Solutions
+              </Typography>
+              <Typography color="text.secondary">
+                Developed by aquaculture professionals and researchers
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" gutterBottom>
+                Data-Driven Insights
+              </Typography>
+              <Typography color="text.secondary">
+                Make informed decisions based on real-time analytics
+              </Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="h6" gutterBottom>
+                User-Friendly Interface
+              </Typography>
+              <Typography color="text.secondary">
+                Intuitive design for seamless operation
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* CTA Section */}
+      <Box
+        sx={{
+          mt: 6,
+          mb: 4,
+          textAlign: 'center',
+        }}
+      >
+        <Typography variant="h4" component="h2" gutterBottom>
+          Ready to optimize your aquaculture operations?
+        </Typography>
+        <Button
+          component={RouterLink}
+          to="/about"
+          variant="contained"
+          size="large"
+          sx={{ mt: 2 }}
+        >
+          Learn More About Us
+        </Button>
+      </Box>
+    </Container>
+  );
+} 

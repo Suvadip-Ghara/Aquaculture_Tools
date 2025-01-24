@@ -1,0 +1,240 @@
+import React, { useState } from 'react';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+import {
+  AppBar,
+  Box,
+  CssBaseline,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  useTheme,
+  useMediaQuery,
+  Button,
+  Container,
+  Divider,
+  Avatar,
+} from '@mui/material';
+import {
+  Menu as MenuIcon,
+  Home,
+  WaterDrop,
+  Restaurant,
+  ShowChart,
+  Calculate,
+  Science,
+  Inventory,
+  Assessment,
+  Event,
+  Info,
+  GitHub,
+  Air,
+  Recycling,
+  MonitorHeart,
+  WaterOutlined,
+  Layers,
+  BoltOutlined,
+  WbSunny,
+  TrendingUp,
+  Construction,
+  Timeline,
+  Pets,
+  LocalDining,
+} from '@mui/icons-material';
+
+const drawerWidth = 280;
+
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+interface NavItem {
+  name: string;
+  path: string;
+  icon: React.ReactElement;
+  description: string;
+}
+
+const navItems: NavItem[] = [
+  { name: 'Home', path: '/', icon: <Home />, description: 'Dashboard' },
+  { name: 'Water Quality', path: '/water-quality', icon: <WaterDrop />, description: 'Monitor water parameters' },
+  { name: 'Feed Management', path: '/feed-management', icon: <Restaurant />, description: 'Optimize feeding' },
+  { name: 'Growth Tracker', path: '/growth-tracker', icon: <ShowChart />, description: 'Track growth rates' },
+  { name: 'FCR Calculator', path: '/fcr-calculator', icon: <Calculate />, description: 'Calculate feed conversion' },
+  { name: 'Disease Prevention', path: '/disease-prevention', icon: <Science />, description: 'Prevent diseases' },
+  { name: 'Waste to Fertilizer', path: '/waste-fertilizer', icon: <Recycling />, description: 'Convert waste to fertilizer' },
+  { name: 'Fish Stress Monitor', path: '/fish-stress', icon: <MonitorHeart />, description: 'Monitor fish stress levels' },
+  { name: 'Pond Evaporation', path: '/pond-evaporation', icon: <WaterOutlined />, description: 'Calculate water loss' },
+  { name: 'Pond Sediment', path: '/pond-sediment', icon: <Layers />, description: 'Manage sediment buildup' },
+  { name: 'Energy Efficiency', path: '/energy-efficiency', icon: <BoltOutlined />, description: 'Optimize energy usage' },
+  { name: 'Weather Impact', path: '/weather-impact', icon: <WbSunny />, description: 'Analyze weather effects' },
+  { name: 'Growth Benchmark', path: '/growth-benchmark', icon: <TrendingUp />, description: 'Compare growth rates' },
+  { name: 'Growth Predictor', path: '/growth-predictor', icon: <Timeline />, description: 'Predict fish growth' },
+  { name: 'Species Suitability', path: '/species-suitability', icon: <Pets />, description: 'Find suitable species' },
+  { name: 'Feeding Calculator', path: '/feeding-calculator', icon: <LocalDining />, description: 'Calculate feeding amounts' },
+  { name: 'Pond Liming', path: '/pond-liming', icon: <Science />, description: 'Calculate lime requirements' }, { name: 'Pond Lining', path: '/pond-lining', icon: <Construction />, description: 'Calculate lining costs' },
+  { name: 'Inventory', path: '/inventory', icon: <Inventory />, description: 'Manage stock' },
+  { name: 'Reports', path: '/reports', icon: <Assessment />, description: 'Generate reports' },
+  { name: 'Production Calendar', path: '/calendar', icon: <Event />, description: 'Plan production' },
+  { name: 'Aeration Calculator', path: '/aeration-calculator', icon: <Air />, description: 'Design aeration systems' },
+  { name: 'About', path: '/about', icon: <Info />, description: 'About us' },
+];
+
+export default function Layout({ children }: LayoutProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const drawer = (
+    <Box sx={{ overflow: 'auto' }}>
+      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Avatar 
+          src="/logo.png" 
+          sx={{ width: 40, height: 40 }}
+          alt="Aquaculture Tools"
+        />
+        <Typography variant="h6" noWrap component="div">
+          Aquaculture Tools
+        </Typography>
+      </Box>
+      <Divider />
+      <List>
+        {navItems.map((item) => (
+          <ListItem key={item.path} disablePadding>
+            <ListItemButton
+              component={RouterLink}
+              to={item.path}
+              selected={location.pathname === item.path}
+              sx={{
+                '&.Mui-selected': {
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                  '&:hover': {
+                    bgcolor: 'primary.dark',
+                  },
+                  '& .MuiListItemIcon-root': {
+                    color: 'primary.contrastText',
+                  },
+                },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText 
+                primary={item.name}
+                secondary={item.description}
+                secondaryTypographyProps={{
+                  sx: { 
+                    display: { xs: 'none', sm: 'block' },
+                    color: location.pathname === item.path ? 'primary.contrastText' : 'text.secondary'
+                  }
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <Divider sx={{ mt: 'auto' }} />
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+        <Button
+          variant="outlined"
+          startIcon={<GitHub />}
+          component="a"
+          href="https://github.com/yourusername/aquaculture-tools"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View on GitHub
+        </Button>
+      </Box>
+    </Box>
+  );
+
+  return (
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        sx={{
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+          bgcolor: 'background.paper',
+          color: 'text.primary',
+          boxShadow: 1,
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: 'none' } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button 
+              color="inherit" 
+              component={RouterLink} 
+              to="/about"
+              startIcon={<Info />}
+            >
+              About
+            </Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Box
+        component="nav"
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+      >
+        <Drawer
+          variant={isMobile ? 'temporary' : 'permanent'}
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true, // Better mobile performance
+          }}
+          sx={{
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              borderRight: '1px solid',
+              borderColor: 'divider',
+              bgcolor: 'background.default',
+            },
+          }}
+        >
+          {drawer}
+        </Drawer>
+      </Box>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          minHeight: '100vh',
+          bgcolor: 'background.default',
+        }}
+      >
+        <Toolbar />
+        <Container maxWidth="xl">
+          {children}
+        </Container>
+      </Box>
+    </Box>
+  );
+} 
