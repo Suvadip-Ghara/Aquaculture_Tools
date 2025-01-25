@@ -35,16 +35,22 @@ import {
 import FormField from '../components/FormField';
 
 interface PredictionData {
+  species: string;
   temperature: string;
+  pH: string;  // Consistently use pH
   dissolvedOxygen: string;
-  pH: string;
   ammonia: string;
+  nitrite: string;
+  nitrate: string;
+  alkalinity: string;
+  hardness: string;
+  turbidity: string;
+  salinity: string;
   feedingRate: string;
   stockingDensity: string;
   waterExchangeRate: string;
   sunlight: string;
   rainfall: string;
-  species: string;
   pondSize: string;
   fishBiomass: string;
   aerationHours: string;
@@ -71,9 +77,15 @@ interface ChartData {
 
 const initialFormData: PredictionData = {
   temperature: '',
-  dissolvedOxygen: '',
   pH: '',
+  dissolvedOxygen: '',
   ammonia: '',
+  nitrite: '',
+  nitrate: '',
+  alkalinity: '',
+  hardness: '',
+  turbidity: '',
+  salinity: '',
   feedingRate: '',
   stockingDensity: '',
   waterExchangeRate: '',
@@ -90,19 +102,19 @@ const initialFormData: PredictionData = {
 const speciesParameters = {
   tilapia: {
     tempRange: { min: 25, max: 32 },
-    phRange: { min: 6.5, max: 8.5 },
+    pHRange: { min: 6.5, max: 8.5 },
     doRange: { min: 4, max: 8 },
     ammoniaMax: 0.5,
   },
   carp: {
     tempRange: { min: 20, max: 28 },
-    phRange: { min: 6.5, max: 8.5 },
+    pHRange: { min: 6.5, max: 8.5 },
     doRange: { min: 5, max: 8 },
     ammoniaMax: 0.4,
   },
   catfish: {
     tempRange: { min: 24, max: 30 },
-    phRange: { min: 6.5, max: 7.5 },
+    pHRange: { min: 6.5, max: 7.5 },
     doRange: { min: 3, max: 7 },
     ammoniaMax: 0.5,
   },
@@ -114,11 +126,11 @@ const WaterQualityPredictor: React.FC = () => {
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [showResults, setShowResults] = useState(false);
 
-  const handleChange = (field: keyof PredictionData) => (value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleInputChange = (field: keyof PredictionData) => (value: string | number | string[]) => {
+    setFormData((prev) => ({ ...prev, [field]: String(value) }));
   };
 
-  const handleSelectChange = (event: SelectChangeEvent) => {
+  const handleSelectChange = (event: SelectChangeEvent<string>) => {
     const { name, value } = event.target;
     setFormData(prev => ({
       ...prev,
@@ -188,7 +200,7 @@ const WaterQualityPredictor: React.FC = () => {
   const generatePredictions = () => {
     const temp = parseFloat(formData.temperature);
     const do_ = parseFloat(formData.dissolvedOxygen);
-    const ph = parseFloat(formData.pH);
+    const pH = parseFloat(formData.pH);
     const ammonia = parseFloat(formData.ammonia);
     const feeding = parseFloat(formData.feedingRate);
     const density = parseFloat(formData.stockingDensity);
@@ -198,7 +210,7 @@ const WaterQualityPredictor: React.FC = () => {
 
     const tempPredictions = predictTemperature(temp, sun, rain);
     const doPredictions = predictDissolvedOxygen(temp, feeding, density);
-    const phPredictions = predictPH(ph, feeding, rain);
+    const phPredictions = predictPH(pH, feeding, rain);
     const ammoniaPredictions = predictAmmonia(temp, feeding, exchange);
 
     const chartData: ChartData[] = Array.from({ length: 48 }, (_, i) => ({
@@ -374,42 +386,102 @@ const WaterQualityPredictor: React.FC = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <FormField
+                    type="number"
                     label="Water Temperature (°C)"
                     value={formData.temperature}
-                    onChange={handleChange('temperature')}
-                    type="number"
+                    onChange={handleInputChange('temperature')}
                     required
                     helperText="Current water temperature"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <FormField
-                    label="pH Level"
-                    value={formData.ph}
-                    onChange={handleChange('ph')}
                     type="number"
+                    label="pH Level"
+                    value={formData.pH}
+                    onChange={handleInputChange('pH')}
                     required
                     helperText="Current pH level (6.5-8.5)"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <FormField
+                    type="number"
                     label="Dissolved Oxygen (mg/L)"
                     value={formData.dissolvedOxygen}
-                    onChange={handleChange('dissolvedOxygen')}
-                    type="number"
+                    onChange={handleInputChange('dissolvedOxygen')}
                     required
                     helperText="Current dissolved oxygen level"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <FormField
+                    type="number"
                     label="Ammonia Level (mg/L)"
                     value={formData.ammonia}
-                    onChange={handleChange('ammonia')}
-                    type="number"
+                    onChange={handleInputChange('ammonia')}
                     required
                     helperText="Current ammonia concentration"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormField
+                    type="number"
+                    label="Nitrite Level (mg/L)"
+                    value={formData.nitrite}
+                    onChange={handleInputChange('nitrite')}
+                    required
+                    helperText="Current nitrite concentration"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormField
+                    type="number"
+                    label="Nitrate Level (mg/L)"
+                    value={formData.nitrate}
+                    onChange={handleInputChange('nitrate')}
+                    required
+                    helperText="Current nitrate concentration"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormField
+                    type="number"
+                    label="Alkalinity (mg/L)"
+                    value={formData.alkalinity}
+                    onChange={handleInputChange('alkalinity')}
+                    required
+                    helperText="Current alkalinity level"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormField
+                    type="number"
+                    label="Hardness (mg/L)"
+                    value={formData.hardness}
+                    onChange={handleInputChange('hardness')}
+                    required
+                    helperText="Current hardness level"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormField
+                    type="number"
+                    label="Turbidity (NTU)"
+                    value={formData.turbidity}
+                    onChange={handleInputChange('turbidity')}
+                    required
+                    helperText="Current turbidity level"
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormField
+                    type="number"
+                    label="Salinity (ppt)"
+                    value={formData.salinity}
+                    onChange={handleInputChange('salinity')}
+                    required
+                    helperText="Current salinity level"
                   />
                 </Grid>
               </Grid>
@@ -426,7 +498,7 @@ const WaterQualityPredictor: React.FC = () => {
                   <FormField
                     label="Pond Size (m²)"
                     value={formData.pondSize}
-                    onChange={handleChange('pondSize')}
+                    onChange={handleInputChange('pondSize')}
                     type="number"
                     required
                     helperText="Surface area of the pond"
@@ -436,7 +508,7 @@ const WaterQualityPredictor: React.FC = () => {
                   <FormField
                     label="Fish Biomass (kg)"
                     value={formData.fishBiomass}
-                    onChange={handleChange('fishBiomass')}
+                    onChange={handleInputChange('fishBiomass')}
                     type="number"
                     required
                     helperText="Total weight of fish"
@@ -446,7 +518,7 @@ const WaterQualityPredictor: React.FC = () => {
                   <FormField
                     label="Daily Feeding Rate (kg)"
                     value={formData.feedingRate}
-                    onChange={handleChange('feedingRate')}
+                    onChange={handleInputChange('feedingRate')}
                     type="number"
                     required
                     helperText="Amount of feed per day"
@@ -456,7 +528,7 @@ const WaterQualityPredictor: React.FC = () => {
                   <FormField
                     label="Water Exchange Rate (%/day)"
                     value={formData.waterExchangeRate}
-                    onChange={handleChange('waterExchangeRate')}
+                    onChange={handleInputChange('waterExchangeRate')}
                     type="number"
                     required
                     helperText="Daily water exchange percentage"
@@ -466,7 +538,7 @@ const WaterQualityPredictor: React.FC = () => {
                   <FormField
                     label="Aeration Hours"
                     value={formData.aerationHours}
-                    onChange={handleChange('aerationHours')}
+                    onChange={handleInputChange('aerationHours')}
                     type="number"
                     required
                     helperText="Hours of aeration per day"
@@ -476,7 +548,7 @@ const WaterQualityPredictor: React.FC = () => {
                   <FormField
                     label="Cloud Cover (%)"
                     value={formData.cloudCover}
-                    onChange={handleChange('cloudCover')}
+                    onChange={handleInputChange('cloudCover')}
                     type="number"
                     required
                     helperText="Percentage of cloud coverage"
@@ -504,7 +576,7 @@ const WaterQualityPredictor: React.FC = () => {
                 <Button
                   variant="contained"
                   onClick={generatePredictions}
-                  disabled={!formData.species || !formData.temperature || !formData.ph || !formData.dissolvedOxygen || !formData.ammonia}
+                  disabled={!formData.species || !formData.temperature || !formData.pH || !formData.dissolvedOxygen || !formData.ammonia}
                 >
                   Generate Predictions
                 </Button>

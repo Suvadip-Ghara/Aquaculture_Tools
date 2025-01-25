@@ -1,26 +1,28 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
+import type { Theme, ThemeOptions } from '@mui/material/styles';
+import type { PaletteMode } from '@mui/material';
 import { deepmerge } from '@mui/utils';
 
-type ThemeMode = 'light' | 'dark' | 'system';
-
 interface ThemeContextType {
-  mode: ThemeMode;
-  setMode: (mode: ThemeMode) => void;
-  systemTheme: 'light' | 'dark';
+  theme: Theme;
+  mode: PaletteMode;
+  toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextType>({
-  mode: 'system',
-  setMode: () => {},
-  systemTheme: 'light',
-});
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
+};
 
-const baseTheme = {
+const baseTheme: ThemeOptions = {
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
   },
   components: {
     MuiButton: {
@@ -35,7 +37,7 @@ const baseTheme = {
 
 const lightTheme = createTheme(deepmerge(baseTheme, {
   palette: {
-    mode: 'light',
+    mode: 'light' as const,
     primary: {
       main: '#1976d2',
       light: '#42a5f5',
@@ -55,7 +57,7 @@ const lightTheme = createTheme(deepmerge(baseTheme, {
 
 const darkTheme = createTheme(deepmerge(baseTheme, {
   palette: {
-    mode: 'dark',
+    mode: 'dark' as const,
     primary: {
       main: '#90caf9',
       light: '#e3f2fd',
@@ -74,40 +76,35 @@ const darkTheme = createTheme(deepmerge(baseTheme, {
 }));
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [mode, setMode] = useState<ThemeMode>(() => {
+  const [mode, setMode] = useState<PaletteMode>(() => {
     const savedMode = localStorage.getItem('themeMode');
-    return (savedMode as ThemeMode) || 'system';
+    return (savedMode as PaletteMode) || 'light';
   });
 
-  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light');
+  const theme = React.useMemo(
+    () =>
+      mode === 'light' ? lightTheme : darkTheme,
+    [mode]
+  );
+
+  const toggleTheme = () => {
+    const newMode = mode === 'light' ? 'dark' : 'light';
+    setMode(newMode);
+    localStorage.setItem('themeMode', newMode);
+  };
 
   useEffect(() => {
-    // Save theme preference to localStorage
-    localStorage.setItem('themeMode', mode);
-  }, [mode]);
-
-  useEffect(() => {
-    // Detect system theme
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const updateSystemTheme = (e: MediaQueryListEvent | MediaQueryList) => {
-      setSystemTheme(e.matches ? 'dark' : 'light');
-    };
-
-    updateSystemTheme(mediaQuery);
-    mediaQuery.addEventListener('change', updateSystemTheme);
-
-    return () => mediaQuery.removeEventListener('change', updateSystemTheme);
+    const savedMode = localStorage.getItem('themeMode');
+    if (savedMode) {
+      setMode(savedMode as PaletteMode);
+    }
   }, []);
 
-  const currentTheme = mode === 'system' 
-    ? (systemTheme === 'dark' ? darkTheme : lightTheme)
-    : (mode === 'dark' ? darkTheme : lightTheme);
-
   return (
-    <ThemeContext.Provider value={{ mode, setMode, systemTheme }}>
-      <MuiThemeProvider theme={currentTheme}>
-        {children}
-      </MuiThemeProvider>
+    <ThemeContext.Provider value={{ theme, mode, toggleTheme }}>
+      <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
     </ThemeContext.Provider>
   );
 };
+
+export default ThemeProvider;

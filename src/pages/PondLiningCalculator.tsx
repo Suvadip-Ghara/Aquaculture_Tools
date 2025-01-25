@@ -118,11 +118,10 @@ const PondLiningCalculator: React.FC = () => {
   const [formData, setFormData] = useState<PondData>(initialFormData);
   const [analysis, setAnalysis] = useState<CostAnalysis | null>(null);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
+  const handleInputChange = (field: keyof PondData) => (value: string | number) => {
     setFormData(prev => ({
       ...prev,
-      [name]: value === '' ? 0 : Number(value),
+      [field]: typeof value === 'string' ? value : String(value)
     }));
   };
 
@@ -228,32 +227,32 @@ const PondLiningCalculator: React.FC = () => {
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <FormField
+              type="number"
               label="Length (m)"
-              value={formData.length || ''}
-              onChange={handleInputChange}
-              name="length"
-              type="number"
+              value={formData.length}
+              onChange={handleInputChange('length')}
+              required
             />
             <FormField
+              type="number"
               label="Width (m)"
-              value={formData.width || ''}
-              onChange={handleInputChange}
-              name="width"
-              type="number"
+              value={formData.width}
+              onChange={handleInputChange('width')}
+              required
             />
             <FormField
+              type="number"
               label="Depth (m)"
-              value={formData.depth || ''}
-              onChange={handleInputChange}
-              name="depth"
-              type="number"
+              value={formData.depth}
+              onChange={handleInputChange('depth')}
+              required
             />
             <FormField
-              label="Slope Ratio (horizontal:vertical)"
-              value={formData.slopeRatio || ''}
-              onChange={handleInputChange}
-              name="slopeRatio"
               type="number"
+              label="Slope Ratio"
+              value={formData.slopeRatio}
+              onChange={handleInputChange('slopeRatio')}
+              required
             />
           </Grid>
 
@@ -302,23 +301,20 @@ const PondLiningCalculator: React.FC = () => {
           <Grid item xs={12} md={6}>
             <FormField
               label="Labor Cost per Day ($)"
-              value={formData.laborCostPerDay || ''}
-              onChange={handleInputChange}
-              name="laborCostPerDay"
+              value={formData.laborCostPerDay}
+              onChange={handleInputChange('laborCostPerDay')}
               type="number"
             />
             <FormField
               label="Estimated Days"
-              value={formData.estimatedDays || ''}
-              onChange={handleInputChange}
-              name="estimatedDays"
+              value={formData.estimatedDays}
+              onChange={handleInputChange('estimatedDays')}
               type="number"
             />
             <FormField
               label="Additional Costs ($)"
-              value={formData.additionalCosts || ''}
-              onChange={handleInputChange}
-              name="additionalCosts"
+              value={formData.additionalCosts}
+              onChange={handleInputChange('additionalCosts')}
               type="number"
               helperText="Equipment rental, site preparation, etc."
             />

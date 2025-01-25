@@ -1,16 +1,18 @@
 import {
-  isRouteErrorResponse,
-  Links,
-  Meta,
+  useRouteError,
+  Link,
+  useLocation,
   Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "react-router";
+} from "react-router-dom";
+import { Helmet } from 'react-helmet';
 
-import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 
-export const links: Route.LinksFunction = () => [
+interface ErrorBoundaryProps {
+  error: any;
+}
+
+export const links = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -30,13 +32,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <Meta />
-        <Links />
+        <Helmet>
+          {links().map((link, index) => (
+          <link key={index} {...link} />
+          ))}
+        </Helmet>
       </head>
       <body>
         {children}
-        <ScrollRestoration />
-        <Scripts />
+
+
       </body>
     </html>
   );
@@ -46,17 +51,18 @@ export default function App() {
   return <Outlet />;
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+export function ErrorBoundary({ error }: ErrorBoundaryProps) {
+  const routeError = useRouteError();
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
 
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+  if (routeError && typeof routeError === 'object' && 'status' in routeError) {
+    message = (routeError as any).status === 404 ? "404" : "Error";
     details =
-      error.status === 404
+      (routeError as any).status === 404
         ? "The requested page could not be found."
-        : error.statusText || details;
+        : ((routeError as any).statusText as string) || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;

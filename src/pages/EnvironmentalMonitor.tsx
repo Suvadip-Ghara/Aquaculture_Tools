@@ -119,7 +119,7 @@ export default function EnvironmentalMonitor() {
     return 'Optimal';
   };
 
-  const analyzeParameters = () => {
+  const analyzeParameters = (): Analysis => {
     const issues: string[] = [];
     const recommendations: string[] = [];
     const impactedParameters: string[] = [];
@@ -180,8 +180,15 @@ export default function EnvironmentalMonitor() {
     recommendations.push('Consider using solar-powered aeration systems');
     recommendations.push('Monitor and record energy consumption');
 
+    let status: Analysis['status'] = 'Optimal';
+    if (riskLevel > 50) {
+      status = 'Critical';
+    } else if (riskLevel > 25) {
+      status = 'Warning';
+    }
+
     return {
-      status: riskLevel > 50 ? 'Critical' : riskLevel > 25 ? 'Warning' : 'Optimal',
+      status,
       issues,
       recommendations,
       riskLevel: Math.min(riskLevel, 100),

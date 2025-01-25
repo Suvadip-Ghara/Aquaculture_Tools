@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SelectChangeEvent } from '@mui/material/Select';
 import {
   Container,
   Typography,
@@ -94,7 +95,9 @@ const ProductionCalendar: React.FC = () => {
     });
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | "Low" | "Medium" | "High">
+  ) => {
     const name = e.target.name as keyof TaskFormData;
     const value = e.target.value;
     if (name) {
@@ -455,7 +458,7 @@ const ProductionCalendar: React.FC = () => {
                     <Select
                       name="type"
                       value={formData.type}
-                      onChange={handleInputChange}
+                        onChange={handleInputChange as (event: SelectChangeEvent<string>) => void}
                       label="Task Type"
                     >
                       {taskTypes.map((type) => (
@@ -483,8 +486,8 @@ const ProductionCalendar: React.FC = () => {
                     <Select
                       name="priority"
                       value={formData.priority}
-                      onChange={handleInputChange}
-                      label="Priority"
+                        onChange={handleInputChange as (event: SelectChangeEvent<"Low" | "Medium" | "High">) => void}
+                        label="Priority"
                     >
                       <MenuItem value="Low">Low</MenuItem>
                       <MenuItem value="Medium">Medium</MenuItem>

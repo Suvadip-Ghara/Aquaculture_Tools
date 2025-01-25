@@ -2,23 +2,10 @@ import React, { useState } from 'react';
 import {
   Container,
   Typography,
-  Paper,
-  Button,
   Box,
   Grid,
-  Alert,
-  Divider,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Checkbox,
-  FormGroup,
-  FormControlLabel,
-  AlertTitle,
-  Tooltip,
-  IconButton,
-  Chip,
+  Paper,
+  Button,
   Card,
   CardContent,
   Table,
@@ -27,9 +14,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Divider,
+  Chip,
 } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
-import FormField from '../components/FormField';
 import {
   Radar,
   RadarChart,
@@ -38,12 +25,47 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from 'recharts';
+import FormField from '../components/FormField';
+
+interface CriticalParameters {
+  temperature: { min: number; max: number };
+  do?: { min: number; max: number };
+  pH: { min: number; max: number };
+}
+
+interface Disease {
+  name: string;
+  description: string;
+  riskFactors: string[];
+  symptoms: string[];
+  criticalParameters: CriticalParameters;
+  preventiveMeasures: string[];
+  treatments: string[];
+}
+
+interface FormData {
+  temperature: string;
+  pH: string;
+  dissolvedOxygen: string;
+  symptoms: string[];
+  riskFactors: string[];
+  ammonia: string;
+  nitrite: string;
+  species: string;
+  ageGroup: string;
+  feedType: string;
+  waterSource: string;
+  stockingDensity: string;
+  behavior: string[];
+  mortalityRate: string;
+  feedingRate: string;
+}
 
 interface RiskData {
   // Water quality parameters
   temperature: string;
   dissolvedOxygen: string;
-  ph: string;
+  pH: string;
   ammonia: string;
   nitrite: string;
   alkalinity: string;
@@ -88,32 +110,43 @@ interface DiseaseRisk {
   treatments: string[];
 }
 
-const initialFormData: RiskData = {
+interface DiseaseInfo {
+  name: string;
+  symptoms: string[];
+  treatments: string[];
+  prevention: string[];
+  riskFactors: string[];
+  criticalParameters: {
+    temperature?: [number, number];
+    pH?: [number, number];
+    do?: number;
+  };
+  treatmentCost?: {
+    low: number;
+    high: number;
+  };
+}
+
+interface SeasonalPattern {
+  season: string;
+  commonDiseases: string[];
+  preventiveMeasures: string[];
+  riskLevel: 'Low' | 'Moderate' | 'High';
+}
+
+const initialFormData: FormData = {
   temperature: '',
+  pH: '',
   dissolvedOxygen: '',
-  ph: '',
+  symptoms: [],
+  riskFactors: [],
   ammonia: '',
   nitrite: '',
-  behavior: [],
-  feedingResponse: '',
-  stockingDensity: '',
-  waterExchangeRate: '',
-  pondAge: '',
-  alkalinity: '',
-  hardness: '',
-  turbidity: '',
-  salinity: '',
-  carbonDioxide: '',
-  seasonType: '',
-  waterSource: '',
-  previousDiseases: [],
-  lastTreatmentDate: '',
-  mortalityRate: '',
   species: '',
-  waterTemperature: '',
-  feedingRate: '',
-  mortality: '',
-  symptoms: [],
+  ageGroup: '',
+  feedType: '',
+  waterSource: '',
+  stockingDensity: '',
 };
 
 const behaviorSymptoms = [
@@ -162,23 +195,6 @@ const previousDiseasesList = [
   'Trichodiniasis',
 ];
 
-interface DiseaseInfo {
-  name: string;
-  symptoms: string[];
-  treatments: string[];
-  prevention: string[];
-  riskFactors: string[];
-  criticalParameters: {
-    temperature?: [number, number];
-    ph?: [number, number];
-    do?: number;
-  };
-  treatmentCost?: {
-    low: number;
-    high: number;
-  };
-}
-
 const diseases: DiseaseInfo[] = [
   {
     name: 'White Spot Disease (Ich)',
@@ -196,9 +212,9 @@ const diseases: DiseaseInfo[] = [
     ],
     riskFactors: ['Low temperature', 'Stressed fish', 'Poor water quality'],
     criticalParameters: {
-      temperature: [24, 26],
-      ph: [6.5, 8.0],
-      do: 5
+      temperature: { min: 24, max: 26 },
+      pH: { min: 6.5, max: 8.0 },
+      do: { min: 5, max: 8 }
     }
   },
   {
@@ -216,8 +232,8 @@ const diseases: DiseaseInfo[] = [
     ],
     riskFactors: ['High ammonia', 'Low oxygen', 'High organic load'],
     criticalParameters: {
-      temperature: [20, 28],
-      do: 6
+      temperature: { min: 20, max: 28 },
+      do: { min: 6, max: 9 }
     }
   },
   {
@@ -235,8 +251,8 @@ const diseases: DiseaseInfo[] = [
     ],
     riskFactors: ['High temperature', 'Poor water quality', 'Physical injury'],
     criticalParameters: {
-      temperature: [20, 30],
-      ph: [6.0, 8.0]
+      temperature: { min: 20, max: 30 },
+      pH: { min: 6.0, max: 8.0 }
     }
   },
   {
@@ -254,8 +270,8 @@ const diseases: DiseaseInfo[] = [
     ],
     riskFactors: ['Low temperature', 'Physical injury', 'Stress'],
     criticalParameters: {
-      temperature: [10, 20],
-      ph: [6.5, 7.5]
+      temperature: { min: 10, max: 20 },
+      pH: { min: 6.5, max: 7.5 }
     }
   },
   {
@@ -273,8 +289,8 @@ const diseases: DiseaseInfo[] = [
     ],
     riskFactors: ['Poor water quality', 'High organic matter', 'Temperature fluctuation'],
     criticalParameters: {
-      temperature: [25, 30],
-      do: 5
+      temperature: { min: 25, max: 30 },
+      do: { min: 5, max: 8 }
     }
   },
   {
@@ -293,7 +309,7 @@ const diseases: DiseaseInfo[] = [
     riskFactors: ['Poor water quality', 'High organic load', 'Overcrowding'],
     criticalParameters: {
       temperature: [20, 28],
-      ph: [6.5, 8.0],
+      pH: [6.5, 8.0],
       do: 5
     },
     treatmentCost: {
@@ -317,7 +333,7 @@ const diseases: DiseaseInfo[] = [
     riskFactors: ['High temperature', 'Poor water quality', 'Stress'],
     criticalParameters: {
       temperature: [25, 32],
-      ph: [6.5, 7.5],
+      pH: [6.5, 7.5],
       do: 6
     },
     treatmentCost: {
@@ -326,13 +342,6 @@ const diseases: DiseaseInfo[] = [
     }
   }
 ];
-
-interface SeasonalPattern {
-  season: string;
-  commonDiseases: string[];
-  preventiveMeasures: string[];
-  riskLevel: 'Low' | 'Moderate' | 'High';
-}
 
 const seasonalPatterns: SeasonalPattern[] = [
   {
@@ -377,22 +386,18 @@ const seasonalPatterns: SeasonalPattern[] = [
   }
 ];
 
-export default function DiseaseRiskAssessment() {
-  const [formData, setFormData] = useState<RiskData>(initialFormData);
+const DiseaseRiskAssessment: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [riskFactors, setRiskFactors] = useState<RiskFactor[]>([]);
   const [diseaseRisks, setDiseaseRisks] = useState<DiseaseRisk[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [selectedRiskFactors, setSelectedRiskFactors] = useState<string[]>([]);
 
-  const handleChange = (field: keyof RiskData) => (value: string | string[]) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleBehaviorChange = (symptom: string) => {
-    setFormData((prev) => ({
+  const handleInputChange = (field: keyof FormData) => (value: string | number | string[]) => {
+    setFormData(prev => ({
       ...prev,
-      behavior: prev.behavior.includes(symptom)
-        ? prev.behavior.filter((b) => b !== symptom)
-        : [...prev.behavior, symptom],
+      [field]: Array.isArray(value) ? value : String(value)
     }));
   };
 
@@ -418,7 +423,7 @@ export default function DiseaseRiskAssessment() {
     });
 
     // pH Risk
-    const ph = parseFloat(formData.ph);
+    const ph = parseFloat(formData.pH);
     factors.push({
       name: 'pH',
       value: ph < 6 || ph > 9 ? 100 : ph < 6.5 || ph > 8.5 ? 50 : 0,
@@ -479,33 +484,35 @@ export default function DiseaseRiskAssessment() {
     speciesDiseases.forEach((disease) => {
       const temp = parseFloat(formData.temperature);
       const do_ = parseFloat(formData.dissolvedOxygen);
-      const ph = parseFloat(formData.ph);
+      const ph = parseFloat(formData.pH);
 
       let probability = 0;
 
-      // Check environmental conditions
-      if (
-        temp >= disease.criticalParameters.temperature?.min &&
-        temp <= disease.criticalParameters.temperature?.max
-      ) {
-        probability += 30;
-      }
-      if (
-        do_ >= disease.criticalParameters.do &&
-        do_ <= disease.criticalParameters.do
-      ) {
-        probability += 20;
-      }
-      if (
-        ph >= disease.criticalParameters.ph?.min &&
-        ph <= disease.criticalParameters.ph?.max
-      ) {
-        probability += 20;
-      }
+        // Check environmental conditions
+        if (disease.criticalParameters.temperature) {
+          const { min: minTemp, max: maxTemp } = disease.criticalParameters.temperature;
+          if (temp >= minTemp && temp <= maxTemp) {
+          probability += 30;
+          }
+        }
+
+        if (disease.criticalParameters.do) {
+          const { min: minDO, max: maxDO } = disease.criticalParameters.do;
+          if (do_ >= minDO && do_ <= maxDO) {
+          probability += 20;
+          }
+        }
+
+        if (disease.criticalParameters.pH) {
+          const { min: minPH, max: maxPH } = disease.criticalParameters.pH;
+          if (pH >= minPH && pH <= maxPH) {
+          probability += 20;
+          }
+        }
 
       // Check symptoms match
       const matchingSymptoms = disease.symptoms.filter((s) =>
-        formData.behavior.includes(s)
+        selectedSymptoms.includes(s)
       );
       probability += (matchingSymptoms.length / disease.symptoms.length) * 30;
 
@@ -562,7 +569,7 @@ export default function DiseaseRiskAssessment() {
             <FormField
               label="Species"
               value={formData.species}
-              onChange={handleChange('species')}
+              onChange={handleInputChange('species')}
               type="select"
               options={diseases.map((d) => ({
                 value: d.name,
@@ -575,7 +582,7 @@ export default function DiseaseRiskAssessment() {
               <FormField
                 label="Water Temperature (°C)"
                 value={formData.temperature}
-                onChange={handleChange('temperature')}
+                onChange={handleInputChange('temperature')}
                 type="number"
                 required
               />
@@ -584,7 +591,7 @@ export default function DiseaseRiskAssessment() {
               <FormField
                 label="Dissolved Oxygen (mg/L)"
                 value={formData.dissolvedOxygen}
-                onChange={handleChange('dissolvedOxygen')}
+                onChange={handleInputChange('dissolvedOxygen')}
                 type="number"
                 required
               />
@@ -592,8 +599,8 @@ export default function DiseaseRiskAssessment() {
           <Grid item xs={12} sm={6} md={4}>
               <FormField
               label="pH"
-                value={formData.ph}
-                onChange={handleChange('ph')}
+                value={formData.pH}
+                onChange={handleInputChange('pH')}
                 type="number"
                 required
               />
@@ -602,7 +609,7 @@ export default function DiseaseRiskAssessment() {
               <FormField
                 label="Ammonia (mg/L)"
                 value={formData.ammonia}
-                onChange={handleChange('ammonia')}
+                onChange={handleInputChange('ammonia')}
                 type="number"
                 required
               />
@@ -611,7 +618,7 @@ export default function DiseaseRiskAssessment() {
               <FormField
               label="Stocking Density (kg/m³)"
               value={formData.stockingDensity}
-              onChange={handleChange('stockingDensity')}
+              onChange={handleInputChange('stockingDensity')}
                 type="number"
                 required
               />
@@ -620,7 +627,7 @@ export default function DiseaseRiskAssessment() {
               <FormField
               label="Feeding Rate (% biomass/day)"
               value={formData.feedingRate}
-              onChange={handleChange('feedingRate')}
+              onChange={handleInputChange('feedingRate')}
                 type="number"
                 required
               />
@@ -629,7 +636,7 @@ export default function DiseaseRiskAssessment() {
               <FormField
               label="Mortality Rate (%)"
                   value={formData.mortalityRate}
-              onChange={handleChange('mortalityRate')}
+              onChange={handleInputChange('mortalityRate')}
                 type="number"
                 required
               />
@@ -638,7 +645,7 @@ export default function DiseaseRiskAssessment() {
               <FormField
               label="Fish Behavior"
               value={formData.behavior.join(', ')}
-              onChange={handleChange('behavior')}
+              onChange={handleInputChange('behavior')}
               type="multiselect"
               options={behaviorSymptoms.map((symptom) => ({ value: symptom, label: symptom }))}
                 required
@@ -648,9 +655,20 @@ export default function DiseaseRiskAssessment() {
               <FormField
               label="Observed Symptoms"
               value={formData.symptoms}
-              onChange={handleChange('symptoms')}
+              onChange={handleInputChange('symptoms')}
               type="multiselect"
               options={behaviorSymptoms.map((symptom) => ({ value: symptom, label: symptom }))}
+              multiple
+              />
+            </Grid>
+          <Grid item xs={12}>
+              <FormField
+              label="Risk Factors"
+              value={formData.riskFactors}
+              onChange={handleInputChange('riskFactors')}
+              type="multiselect"
+              options={riskFactors.map((factor) => ({ value: factor, label: factor }))}
+              multiple
               />
             </Grid>
           </Grid>
@@ -663,7 +681,7 @@ export default function DiseaseRiskAssessment() {
               !formData.species ||
               !formData.temperature ||
               !formData.dissolvedOxygen ||
-              !formData.ph ||
+              !formData.pH ||
               !formData.ammonia ||
               !formData.stockingDensity ||
               !formData.mortalityRate ||
@@ -958,3 +976,5 @@ export default function DiseaseRiskAssessment() {
     </Container>
   );
 };
+
+export default DiseaseRiskAssessment;

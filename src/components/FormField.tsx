@@ -3,26 +3,28 @@ import {
   TextField,
   FormControl,
   InputLabel,
-  MenuItem,
   Select,
+  MenuItem,
+  FormHelperText,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 
-interface Option {
+export interface Option {
   value: string;
   label: string;
 }
 
 interface FormFieldProps {
   label: string;
-  value: string | number;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => void;
-  type?: string;
-  name?: string;
+  value: string | number | string[];
+  onChange: (value: string | number | string[]) => void;
+  type?: 'text' | 'number' | 'select' | 'multiselect' | 'date';
   required?: boolean;
   helperText?: string;
-  fullWidth?: boolean;
-  margin?: 'none' | 'dense' | 'normal';
   options?: Option[];
+  multiple?: boolean;
+  error?: boolean;
+  disabled?: boolean;
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -30,23 +32,33 @@ const FormField: React.FC<FormFieldProps> = ({
   value,
   onChange,
   type = 'text',
-  name,
   required = false,
   helperText,
-  fullWidth = true,
-  margin = 'normal',
-  options,
-  ...props
+  options = [],
+  multiple = false,
+  error = false,
+  disabled = false,
 }) => {
-  if (type === 'select' && options) {
+  const handleTextChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const newValue = type === 'number' ? Number(event.target.value) : event.target.value;
+    onChange(newValue);
+  };
+
+  const handleSelectChange = (event: SelectChangeEvent<string | string[]>) => {
+    onChange(event.target.value);
+  };
+
+  if (type === 'select' || type === 'multiselect') {
     return (
-      <FormControl fullWidth={fullWidth} margin={margin} required={required}>
+      <FormControl fullWidth required={required} error={error} disabled={disabled}>
         <InputLabel>{label}</InputLabel>
         <Select
-          value={value.toString()}
+          value={value as string | string[]}
           label={label}
-          name={name}
-          onChange={onChange}
+          onChange={handleSelectChange}
+          multiple={type === 'multiselect' || multiple}
         >
           {options.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -54,25 +66,25 @@ const FormField: React.FC<FormFieldProps> = ({
             </MenuItem>
           ))}
         </Select>
+        {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormControl>
     );
   }
 
   return (
     <TextField
+      fullWidth
       label={label}
       value={value}
-      onChange={onChange}
-      type={type}
-      name={name}
+      onChange={handleTextChange}
+      type={type === 'date' ? 'date' : type}
       required={required}
       helperText={helperText}
-      fullWidth={fullWidth}
-      margin={margin}
-      {...props}
+      error={error}
+      disabled={disabled}
+      InputLabelProps={type === 'date' ? { shrink: true } : undefined}
     />
   );
 };
 
-export type { FormFieldProps, Option };
 export default FormField;

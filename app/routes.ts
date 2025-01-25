@@ -1,3 +1,12 @@
-import { type RouteConfig, index } from "@react-router/dev/routes";
+import { RouteObject } from 'react-router-dom';
+import Home from './routes/home';
 
-export default [index("routes/home.tsx")] satisfies RouteConfig;
+const routes: RouteObject[] = [
+	{
+		path: '/',
+		element: <Home />,
+		index: true,
+	}
+];
+
+export default routes;

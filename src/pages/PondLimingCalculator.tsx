@@ -18,6 +18,7 @@ import {
   AlertTitle,
   Divider,
 } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
 import FormField from '../components/FormField';
 
 interface LimingData {
@@ -113,7 +114,9 @@ const PondLimingCalculator: React.FC = () => {
     recommendations: string[];
   } | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }> | SelectChangeEvent<string>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent<string>
+  ) => {
     const name = e.target.name;
     const value = e.target.value;
     if (name) {

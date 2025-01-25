@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { SelectChangeEvent } from '@mui/material/Select';
 import {
   Container,
   Typography,
@@ -167,12 +168,12 @@ export default function FeedingCalculator() {
   const [selectedHistory, setSelectedHistory] = useState<FeedingHistory | null>(null);
 
   const handleChange = (field: keyof FeedingData) => (
-    event: React.ChangeEvent<HTMLInputElement | { value: unknown }>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>
   ) => {
     const value = event.target.value;
     setFormData((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: typeof value === 'string' ? value : Number(value),
     }));
   };
 
@@ -294,7 +295,7 @@ export default function FeedingCalculator() {
                   <InputLabel>Species</InputLabel>
                   <Select
                     value={formData.species}
-                    onChange={handleChange('species')}
+                    onChange={handleChange('species') as (event: SelectChangeEvent<string>) => void}
                     label="Species"
                   >
                     {Object.keys(speciesData).map((species) => (
@@ -335,7 +336,7 @@ export default function FeedingCalculator() {
                   <InputLabel>Growth Stage</InputLabel>
                   <Select
                     value={formData.growthStage}
-                    onChange={handleChange('growthStage')}
+                    onChange={handleChange('growthStage') as (event: SelectChangeEvent<string>) => void}
                     label="Growth Stage"
                   >
                     {growthStages.map((stage) => (

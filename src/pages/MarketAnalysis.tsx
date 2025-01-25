@@ -145,8 +145,8 @@ export default function MarketAnalysis() {
   const [historicalData, setHistoricalData] = useState<PriceData[]>([]);
   const [showResults, setShowResults] = useState(false);
 
-  const handleChange = (field: keyof MarketData) => (value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (field: keyof MarketData) => (value: string | number | string[]) => {
+    setFormData((prev) => ({ ...prev, [field]: String(value) }));
   };
 
   const analyzeMarket = () => {
