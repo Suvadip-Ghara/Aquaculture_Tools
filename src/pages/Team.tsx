@@ -22,16 +22,8 @@ export default function Team() {
       affiliation: 'College of Fisheries, SKUAST-Kashmir',
       expertise: ['Molecular Biology', 'Genetics', 'Biotechnology'],
       email: 'mashraf38@skuastkashmir.ac.in',
+      image: '/ashraf.png',
       icon: <Science fontSize="large" color="primary" />,
-    },
-    {
-      name: 'Dr. Irfan Ahmad Bhat',
-      title: 'Assistant Professor',
-      department: 'Division of Fish Genetics and Biotechnology',
-      affiliation: 'College of Fisheries, SKUAST-Kashmir',
-      expertise: ['Fish Genetics', 'Breeding', 'Research'],
-      email: 'irfanbhat@skuastkashmir.ac.in',
-      icon: <Psychology fontSize="large" color="primary" />,
     },
     {
       name: 'Suvadip Ghara',
@@ -40,6 +32,7 @@ export default function Team() {
       affiliation: 'College of Fisheries, SKUAST-Kashmir',
       expertise: ['Aquaculture', 'Digital Tools', 'Research'],
       email: 'suvadip.ghara@skuastkashmir.ac.in',
+      image: '/suvadip.png',
       icon: <Biotech fontSize="large" color="primary" />,
     },
   ];
@@ -71,6 +64,8 @@ export default function Team() {
                 <CardContent>
                   <Box sx={{ textAlign: 'center', mb: 3 }}>
                     <Avatar 
+                      src={member.image}
+                      alt={member.name}
                       sx={{ 
                         width: 80, 
                         height: 80, 
@@ -78,7 +73,7 @@ export default function Team() {
                         bgcolor: 'primary.main',
                       }}
                     >
-                      {member.icon}
+                      {!member.image && member.icon}
                     </Avatar>
                   </Box>
                   <Typography variant="h5" component="h2" gutterBottom align="center">
