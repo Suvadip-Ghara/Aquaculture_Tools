@@ -27,7 +27,7 @@ export default function Team() {
     },
     {
       name: 'Suvadip Ghara',
-      title: 'M.F.Sc Student',
+      title: 'Research Scholar',
       department: 'Division of Fish Genetics and Biotechnology',
       affiliation: 'College of Fisheries, SKUAST-Kashmir',
       expertise: ['Aquaculture', 'Digital Tools', 'Research'],
